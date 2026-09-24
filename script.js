@@ -13,29 +13,68 @@ const searchEl = document.getElementById('search');
 const overlay = document.getElementById('overlay');
 const form = document.getElementById('projectForm');
 
-// Загрузка из localStorage или дефолт
+let projects = load();   // сразу загружаем при старте
+
+// --- Загрузка ---
+// Возвращает массив проектов из localStorage.
+// Если там пусто, битый JSON или не массив — возвращает дефолт.
 function load() {
+  let raw = null;
+
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  return DEFAULT_PROJECTS.slice();
-}
+    raw = localStorage.getItem(STORAGE_KEY);
+  } catch (e) {
+    // localStorage может быть недоступен (приватный режим, запрет cookies)
+    return DEFAULT_PROJECTS.slice();
+  }
 
-function save(projects) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-}
+  if (!raw) {
+    return DEFAULT_PROJECTS.slice();
+  }
 
-let projects = load();
+  let parsed = null;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    // битый JSON — тоже дефолт
+    return DEFAULT_PROJECTS.slice();
+  }
 
-function render() {
-  const query = searchEl.value.trim().toLowerCase();
-  const filtered = projects.filter(p =>
-    p.title.toLowerCase().includes(query) ||
-    (p.desc || '').toLowerCase().includes(query)
+  // Главная проверка: должен быть именно массив
+  if (!Array.isArray(parsed)) {
+    console.warn('projects: в localStorage не массив, беру дефолт');
+    return DEFAULT_PROJECTS.slice();
+  }
+
+  // Оставляем только «правильные» элементы (у кого есть title)
+  const valid = parsed.filter(item =>
+    item && typeof item === 'object' && typeof item.title === 'string'
   );
 
-  if (!filtered.length) {
+  // Если после фильтра пусто — тоже дефолт
+  return valid.length > 0 ? valid : DEFAULT_PROJECTS.slice();
+}
+
+// --- Сохранение ---
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  } catch (e) {
+    console.warn('projects: не удалось сохранить в localStorage', e);
+  }
+}
+
+// --- Отрисовка списка ---
+function render() {
+  const query = searchEl.value.trim().toLowerCase();
+
+  const filtered = projects.filter(p => {
+    const titleMatch = p.title.toLowerCase().includes(query);
+    const descMatch = (p.desc || '').toLowerCase().includes(query);
+    return titleMatch || descMatch;
+  });
+
+  if (filtered.length === 0) {
     listEl.innerHTML = '<div class="empty">Ничего не найдено</div>';
     return;
   }
@@ -49,16 +88,21 @@ function render() {
   `).join('');
 }
 
+// --- Защита от XSS ---
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, s => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
   }[s]));
 }
 
-// Поиск
+// --- Поиск ---
 searchEl.addEventListener('input', render);
 
-// Удаление проекта (делегирование события на контейнер списка)
+// --- Удаление проекта ---
 listEl.addEventListener('click', (e) => {
   const btn = e.target.closest('.card-delete');
   if (!btn) return;
@@ -70,17 +114,17 @@ listEl.addEventListener('click', (e) => {
   if (!confirm(`Удалить проект «${project.title}»?`)) return;
 
   projects = projects.filter(p => p.id !== id);
-  save(projects);
+  save();
   render();
 });
 
-// Открыть форму
+// --- Открыть форму ---
 document.getElementById('openForm').addEventListener('click', () => {
   overlay.classList.add('open');
   document.getElementById('title').focus();
 });
 
-// Закрыть форму
+// --- Закрыть форму ---
 document.getElementById('closeForm').addEventListener('click', () => {
   overlay.classList.remove('open');
   form.reset();
@@ -93,24 +137,26 @@ overlay.addEventListener('click', (e) => {
   }
 });
 
-// Сохранение нового проекта
+// --- Сохранение нового проекта ---
 form.addEventListener('submit', (e) => {
   e.preventDefault();
+
   const title = document.getElementById('title').value.trim();
   const desc = document.getElementById('desc').value.trim();
   if (!title) return;
 
   projects.unshift({
     id: Date.now(),
-    title,
-    desc
+    title: title,
+    desc: desc
   });
 
-  save(projects);
+  save();
   render();
 
   overlay.classList.remove('open');
   form.reset();
 });
 
+// --- Первая отрисовка ---
 render();
