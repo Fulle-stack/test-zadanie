@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проекты</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Проекты</h1>
+
+    <div class="toolbar">
+        <input id="search" class="search" type="search" placeholder="Поиск проектов…">
+        <button id="openForm" class="btn-create">Создать проект</button>
+    </div>
+
+    <div id="list" class="projects"></div>
+
+    <!-- Модальное окно создания -->
+    <div id="overlay" class="overlay">
+        <div class="modal">
+            <h2>Новый проект</h2>
+            <form id="projectForm">
+                <div class="field">
+                    <label for="title">Название</label>
+                    <input id="title" name="title" required maxlength="60" placeholder="Например: Учебный проект">
+                </div>
+                <div class="field">
+                    <label for="desc">Описание</label>
+                    <textarea id="desc" name="desc" rows="3" maxlength="200" placeholder="Коротко о проекте"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="closeForm">Отмена</button>
+                    <button type="submit" class="btn-save">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

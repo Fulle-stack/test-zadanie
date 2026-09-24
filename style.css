@@ -1,0 +1,225 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f4f6f8;
+    color: #1f2937;
+    padding: 16px;
+}
+
+h1 {
+    font-size: 22px;
+    margin: 0 0 16px;
+}
+
+/* Панель управления: поиск + кнопка */
+.toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    /* ключ к тому, чтобы на телефоне не перекрывались */
+}
+
+.search {
+    flex: 1 1 200px;
+    /* растягивается, но не меньше 200px */
+    min-width: 0;
+    /* чтобы input не вылезал за контейнер */
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    outline: none;
+}
+
+.search:focus {
+    border-color: #2563eb;
+}
+
+.btn-create {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: #2563eb;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-create:hover {
+    background: #1d4ed8;
+}
+
+/* Список проектов */
+.projects {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.card {
+    position: relative;
+    /* для кнопки удаления */
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.card h3 {
+    margin: 0 0 6px;
+    padding-right: 28px;
+    /* чтобы текст не залезал под крестик */
+    font-size: 16px;
+}
+
+.card p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Кнопка удаления на карточке */
+.card-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    color: #9ca3af;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.card-delete:hover {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.empty {
+    padding: 24px;
+    text-align: center;
+    color: #9ca3af;
+    background: #fff;
+    border: 1px dashed #d1d5db;
+    border-radius: 10px;
+}
+
+/* Модальное окно */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 10;
+}
+
+.overlay.open {
+    display: flex;
+}
+
+.modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.modal h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+}
+
+.field {
+    margin-bottom: 12px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #374151;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+    padding: 9px 11px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+}
+
+.field input:focus,
+.field textarea:focus {
+    border-color: #2563eb;
+}
+
+/* Разрешаем менять только высоту textarea, не ширину */
+.field textarea {
+    resize: vertical;
+    min-height: 80px;
+    max-height: 300px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.modal-actions button {
+    padding: 9px 16px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.btn-cancel {
+    background: #fff;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.btn-save {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* На узких экранах — поиск и кнопка в одну строку, каждый своей ширины */
+@media (max-width: 480px) {
+    .toolbar {
+        flex-wrap: nowrap;
+    }
+
+    .search {
+        flex: 1 1 auto;
+    }
+
+    .btn-create {
+        padding: 10px 12px;
+    }
+}
